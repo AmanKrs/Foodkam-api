@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
   const { firstName, lastName, mobileNo, email, password } = req.body;
 
   const userOne = await Users.findOne({ mobileNo: req.body.mobileNo });
-  console.log("userOne");
+
   if (userOne) {
     const userData = {
       uid: userOne._id,

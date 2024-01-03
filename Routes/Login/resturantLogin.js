@@ -5,52 +5,80 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 // const data = require("../database");
 const mongoose = require("mongoose");
-// const Users = require("../Schema/UserSchema");
+const RestaurantInfo = require("../../Schema/RestaurantSchema");
 
-router.post("/signup", (req, res) => {
+router.post("/register", async (req, res) => {
+  const {
+    resName,
+    address,
+    resnumber,
+    resowner,
+    password,
+    resopentime,
+    resclosetime,
+    restype,
+    cuisine,
+  } = req.body;
 
-  const { Email, userId, password } = req.body; 
-console.log(Email)
-  // const user = new Users(req.body);
 
-  // const addUser = await user.save();
+  const findRestaurant = await RestaurantInfo.find({
+    resnumber: req.body.resnumber,
+  });
 
-  // if (addUser) {
-  //   res.status(200).send({ msg: "User Register Successfully" });
-  // } else {
-  //   res.status(403).send({ msg: "Unable to Register User " });
-  // }
-  res.status(403).send( Email + userId + password );
+  if (findRestaurant.length !== 0) {
+
+    res.status(400).send({ msg: "Restaurant Already Present" });
+  } else {
+    const Restaurant = new RestaurantInfo(req.body);
+    const addRestaurant = await Restaurant.save();
+
+    if (addRestaurant) {
+      res.status(200).send({ msg: "Restaurant Register Successfully" });
+    } else {
+      res.status(403).send({ msg: "Unable to Register Restaurant " });
+    }
+  }
+
   res.end();
-  // const finduser = await Users.find({})
-
-  // if(finduser){
-  //    ("user match", finduser)
-  // }
 });
 
-router.post("/login",  async (req, res) => {
-  const { userId, password } = req.body;
+router.post("/login", async (req, res) => {
+  const {
+    resName,
+    address,
+    resnumber,
+    resowner,
+    password,
+    resopentime,
+    resclosetime,
+    restype,
+    cuisine,
+  } = req.body;
 
-  const userOne = await Users.findOne({ userId: req.body.userId });
-
-  if (userOne) {
-    const userData = {
-      uid: userOne._id,
-      userId: userOne.userId,
-      firstName: userOne.firstName,
-      lastName: userOne.lastName,
-      email: userOne.email,
+  const RestaurantExist = await RestaurantInfo.findOne({
+    resnumber: req.body.resnumber,
+  });
+  
+  if (RestaurantExist) {
+    const resturantData = {
+      resid: RestaurantExist._id,
+      resnumber: RestaurantExist.resnumber,
+      resName: RestaurantExist.resName,
+      resowner: RestaurantExist.resowner,
+      address: RestaurantExist.address,
+      resopentime: RestaurantExist.resopentime,
+      resclosetime: RestaurantExist.resclosetime,
+      restype: RestaurantExist.restype,
+      cuisine: RestaurantExist.cuisine,
     };
-
-    if (password == userOne.password) {
-      const token = jwt.sign(userData, "secret");
+    if (password == RestaurantExist.password) {
+      const token = jwt.sign(resturantData, "secret");
       res.status(200).send({ token: token });
     } else {
       res.status(401).send({ msg: "password is incorrect" });
     }
   } else {
-    res.status(403).send({ msg: "Please register user doesn't exist" });
+    res.status(403).send({ msg: "Please register Restaurant doesn't exist" });
   }
   res.end();
 });
