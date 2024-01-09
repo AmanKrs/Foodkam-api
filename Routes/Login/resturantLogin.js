@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
       cuisine: RestaurantExist.cuisine,
     };
     if (password == RestaurantExist.password) {
-      const token = jwt.sign(resturantData, "secret");
+      const token = jwt.sign(resturantData, "resSecret");
       res.status(200).send({ token: token });
     } else {
       res.status(401).send({ msg: "password is incorrect" });
