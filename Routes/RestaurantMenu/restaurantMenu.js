@@ -1,48 +1,46 @@
 const express = require("express");
 const router = express.Router();
 const RestaurantsMenu = require("../../Schema/RestaurantMenuSchema");
+const RestaurantInfo = require("../../Schema/RestaurantSchema");
 const jwt = require("jsonwebtoken");
 
 router.post("/addmenu", async (req, res) => {
-  console.log(req.headers.authorization);
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNpZCI6IjY1OTVjZjgwODhlMmI1YTY1MWY5YTk5NCIsInJlc251bWJlciI6MTIzNDU2Nzg5MDEsInJlc05hbWUiOiJhbWFuIiwicmVzb3duZXIiOiJhc0BnLmNvbSIsImFkZHJlc3MiOiJrciIsInJlc29wZW50aW1lIjoiMTA6MzAiLCJyZXNjbG9zZXRpbWUiOiIyMDoyMSIsInJlc3R5cGUiOiJGb29kIFRydWNrIiwiY3Vpc2luZSI6IkNoaW5lc2UiLCJpYXQiOjE3MDQ4MzIyOTh9.10V1GW2TmOh4uPgeZWIIahIUd8g4lJU5_f-rBXOTb8o";
-  const isvalid = jwt.verify(token, "resSecret");
+  const isvalid = jwt.verify(req.headers.authorization, "resSecret");
   if (isvalid) {
     const {
-     
       itemname,
       quantity,
       category,
       description,
       itempic,
-      itemcuisine,
+      itemtype,
       itemprice,
     } = req.body;
 
-
-    const menuItem ={
-      itemId:Math.ceil(Math.random() * 10000),
-      resId:isvalid.resid,
-      itemname:itemname,
-      quantity:quantity,
-      category:category,
-      description:description,
-      itempic:itempic,
-      itemcuisine:itemcuisine,
-      itemprice:itemprice,
-    }
+    const menuItem = {
+      itemId: Math.ceil(Math.random() * 10000),
+      resId: isvalid.resid,
+      category: category,
+      categoryMenu: {
+        itemname: itemname,
+        quantity: quantity,
+        description: description,
+        itempic: itempic,
+        itemtype: itemtype,
+        itemprice: itemprice,
+      },
+      
+    };
 
     const addMenuItem = new RestaurantsMenu(menuItem);
 
-  const menuItemAdded = await addMenuItem.save();
+    const menuItemAdded = await addMenuItem.save();
 
-  if (menuItemAdded) {
-    res.status(200).send({ msg: "menuItem added" });
-  } else {
-    res.status(403).send({ msg: "Error menuItem not added" });
-  }
-
+    if (menuItemAdded) {
+      res.status(200).send({ msg: "menuItem added" });
+    } else {
+      res.status(403).send({ msg: "Error menuItem not added" });
+    }
   } else {
     res.status(403).send({ msg: "Please register Restaurant doesn't exist" });
   }
@@ -50,15 +48,24 @@ router.post("/addmenu", async (req, res) => {
   res.end();
 });
 
-
 router.post("/getmenulist", async (req, res) => {
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNpZCI6IjY1OTVjZjgwODhlMmI1YTY1MWY5YTk5NCIsInJlc251bWJlciI6MTIzNDU2Nzg5MDEsInJlc05hbWUiOiJhbWFuIiwicmVzb3duZXIiOiJhc0BnLmNvbSIsImFkZHJlc3MiOiJrciIsInJlc29wZW50aW1lIjoiMTA6MzAiLCJyZXNjbG9zZXRpbWUiOiIyMDoyMSIsInJlc3R5cGUiOiJGb29kIFRydWNrIiwiY3Vpc2luZSI6IkNoaW5lc2UiLCJpYXQiOjE3MDQ4MzIyOTh9.10V1GW2TmOh4uPgeZWIIahIUd8g4lJU5_f-rBXOTb8o";
-  const isvalid = jwt.verify(token, "resSecret");
+  const isvalid = jwt.verify(req.headers.authorization, "resSecret");
   if (isvalid) {
-  const menuList = await RestaurantsMenu.find({ resId: isvalid.resid });
+    const menuList = await RestaurantsMenu.find({ resId: isvalid.resid });
 
-  res.status(200).send(menuList);}
+    res.status(200).send(menuList);
+  }
+});
+
+router.post("/getItems", async (req, res) => {
+  const isvalid = jwt.verify(req.headers.authorization, "secret");
+  if (isvalid) {
+    const menuList = await RestaurantsMenu.find({ resId: req.body.id });
+    const resinfo = await RestaurantInfo.findOne({ _id: req.body.id });
+    res.status(200).send({menuList,resinfo});
+  }
+
+  console.log("req", req.body.id);
 });
 
 module.exports = router;

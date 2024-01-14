@@ -13,10 +13,10 @@ const mongoose = require("mongoose");
 const Users = require("../../Schema/CustomerSchema");
 
 router.post("/signup", async (req, res) => {
-  const { firstName, lastName, mobileNo, email, password } = req.body;
+  const { firstName, lastName, phone, email, password } = req.body;
   console.log(req.body);
 
-  const finduser = await Users.find({ mobileNo: req.body.mobileNo });
+  const finduser = await Users.find({ phone: req.body.phone });
 
   if (finduser.length !== 0) {
     console.log("finduser", finduser.length);
@@ -35,22 +35,22 @@ router.post("/signup", async (req, res) => {
   res.end();
 });
 // router.post("/sendotp", async (req, res) => {
-//   const { firstName, lastName, mobileNo, email, password } = req.body;
+//   const { firstName, lastName, phone, email, password } = req.body;
 //   console.log("verifyOTP", req.body);
-//   let result = await textflow.sendSMS(mobileNo, "your OTP ... 321345");
+//   let result = await textflow.sendSMS(phone, "your OTP ... 321345");
 //   if (result.ok) {
 //     console.log("SUCCESS");
 //   }
 // });
 router.post("/login", async (req, res) => {
-  const { firstName, lastName, mobileNo, email, password } = req.body;
+  const { firstName, lastName, phone, email, password } = req.body;
 
-  const userOne = await Users.findOne({ mobileNo: req.body.mobileNo });
+  const userOne = await Users.findOne({ phone: req.body.phone });
 
   if (userOne) {
     const userData = {
       uid: userOne._id,
-      mobileNo: userOne.mobileNo,
+      phone: userOne.phone,
       firstName: userOne.firstName,
       lastName: userOne.lastName,
       email: userOne.email,

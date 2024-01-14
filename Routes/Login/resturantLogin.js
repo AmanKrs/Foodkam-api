@@ -11,22 +11,21 @@ router.post("/register", async (req, res) => {
   const {
     resName,
     address,
-    resnumber,
+    phone,
     resowner,
     password,
     resopentime,
     resclosetime,
     restype,
     cuisine,
+    resprofilepic,
   } = req.body;
 
-
   const findRestaurant = await RestaurantInfo.find({
-    resnumber: req.body.resnumber,
+    phone: req.body.phone,
   });
 
   if (findRestaurant.length !== 0) {
-
     res.status(400).send({ msg: "Restaurant Already Present" });
   } else {
     const Restaurant = new RestaurantInfo(req.body);
@@ -43,26 +42,28 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log(req.body);
   const {
     resName,
     address,
-    resnumber,
+    phone,
     resowner,
     password,
     resopentime,
     resclosetime,
     restype,
     cuisine,
+    resprofilepic,
   } = req.body;
 
   const RestaurantExist = await RestaurantInfo.findOne({
-    resnumber: req.body.resnumber,
+    phone: req.body.phone,
   });
-  
+
   if (RestaurantExist) {
     const resturantData = {
       resid: RestaurantExist._id,
-      resnumber: RestaurantExist.resnumber,
+      phone: RestaurantExist.phone,
       resName: RestaurantExist.resName,
       resowner: RestaurantExist.resowner,
       address: RestaurantExist.address,
@@ -70,6 +71,7 @@ router.post("/login", async (req, res) => {
       resclosetime: RestaurantExist.resclosetime,
       restype: RestaurantExist.restype,
       cuisine: RestaurantExist.cuisine,
+      resprofilepic: RestaurantExist.resprofilepic,
     };
     if (password == RestaurantExist.password) {
       const token = jwt.sign(resturantData, "resSecret");
@@ -81,6 +83,14 @@ router.post("/login", async (req, res) => {
     res.status(403).send({ msg: "Please register Restaurant doesn't exist" });
   }
   res.end();
+});
+
+router.post("/getresturantDetails", async (req, res) => {
+  
+    const menuList = await RestaurantInfo.find();
+    console.log(menuList);
+    res.status(200).send(menuList);
+  
 });
 
 module.exports = router;

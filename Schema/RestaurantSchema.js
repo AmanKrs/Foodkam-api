@@ -9,7 +9,7 @@ const restaurantSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  resnumber: {
+  phone: {
     type: Number,
     required: true,
   },
@@ -26,6 +26,10 @@ const restaurantSchema = mongoose.Schema({
     required: true,
   },
   resclosetime: {
+    type: String,
+    required: true,
+  },
+  resprofilepic: {
     type: String,
     required: true,
   },

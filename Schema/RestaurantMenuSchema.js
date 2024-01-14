@@ -1,41 +1,43 @@
 var mongoose = require("mongoose");
 
 const restaurantMenuSchema = mongoose.Schema({
-  itemId:{
+  itemId: {
     type: String,
     required: true,
   },
-  resId:{
+  resId: {
     type: String,
-    required: true,
-  },
-  itemname: {
-    type: String,
-    required: true,
-  },
-  quantity: {
-    type: Number,
     required: true,
   },
   category: {
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  itempic: {
-    type: String,
-    required: true,
-  },
-  itemcuisine: {
-    type: String,
-    required: true,
-  },
-  itemprice: {
-    type: Number,
-    required: true,
+  categoryMenu: {
+    itemname: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    itempic: {
+      type: String,
+      required: true,
+    },
+    itemtype: {
+      type: String,
+      required: true,
+    },
+    itemprice: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
   },
 });
 
