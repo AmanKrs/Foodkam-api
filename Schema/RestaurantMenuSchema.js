@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 const restaurantMenuSchema = mongoose.Schema({
   itemId: {
-    type: String,
+    type: Number,
     required: true,
   },
   resId: {
@@ -13,31 +13,29 @@ const restaurantMenuSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  categoryMenu: {
-    itemname: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    itempic: {
-      type: String,
-      required: true,
-    },
-    itemtype: {
-      type: String,
-      required: true,
-    },
-    itemprice: {
-      type: Number,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
+  itemname: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  itempic: {
+    type: String,
+    required: true,
+  },
+  itemtype: {
+    type: String,
+    required: true,
+  },
+  itemprice: {
+    type: Number,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
   },
 });
 

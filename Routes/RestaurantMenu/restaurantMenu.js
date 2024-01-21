@@ -21,15 +21,12 @@ router.post("/addmenu", async (req, res) => {
       itemId: Math.ceil(Math.random() * 10000),
       resId: isvalid.resid,
       category: category,
-      categoryMenu: {
-        itemname: itemname,
-        quantity: quantity,
-        description: description,
-        itempic: itempic,
-        itemtype: itemtype,
-        itemprice: itemprice,
-      },
-      
+      itemname: itemname,
+      quantity: quantity,
+      description: description,
+      itempic: itempic,
+      itemtype: itemtype,
+      itemprice: itemprice,
     };
 
     const addMenuItem = new RestaurantsMenu(menuItem);
@@ -37,7 +34,8 @@ router.post("/addmenu", async (req, res) => {
     const menuItemAdded = await addMenuItem.save();
 
     if (menuItemAdded) {
-      res.status(200).send({ msg: "menuItem added" });
+      const menuList = await RestaurantsMenu.find({ resId: req.body.id });
+      res.status(200).send({ msg: "menuItem added", menuList });
     } else {
       res.status(403).send({ msg: "Error menuItem not added" });
     }
@@ -57,15 +55,70 @@ router.post("/getmenulist", async (req, res) => {
   }
 });
 
-router.post("/getItems", async (req, res) => {
+router.post("/getRestaurantInfo", async (req, res) => {
   const isvalid = jwt.verify(req.headers.authorization, "secret");
   if (isvalid) {
-    const menuList = await RestaurantsMenu.find({ resId: req.body.id });
     const resinfo = await RestaurantInfo.findOne({ _id: req.body.id });
-    res.status(200).send({menuList,resinfo});
+
+    if (resinfo) {
+      res.status(200).send({ resinfo });
+    } else {
+      res.status(404).send({ message: " cannot connect to restaurants" });
+    }
   }
 
   console.log("req", req.body.id);
+});
+
+router.post("/getItems", async (req, res) => {
+  let resId = req.body.id;
+
+  console.log("req", req.body.id);
+  const Starter = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "starter",
+  });
+  const Chinese = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "chinese",
+  });
+  const Main_Course = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "Main Course",
+  });
+  const Dessert = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "dessert",
+  });
+  const Breads = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "breads",
+  });
+  const Rice = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "rice",
+  });
+  const Biryani = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "biryani",
+  });
+  const Beverages = await RestaurantsMenu.find({
+    resId: req.body.id,
+    category: "beverages",
+  });
+
+  res
+    .status(200)
+    .send([
+      { Starter },
+      { Chinese },
+      { Main_Course },
+      { Breads },
+      { Rice },
+      { Biryani },
+      { Dessert },
+      { Beverages },
+    ]);
 });
 
 module.exports = router;
