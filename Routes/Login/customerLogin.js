@@ -10,7 +10,7 @@ const router = express.Router();
 // const ValidatorSignup = require("../Middleware/validateSignup");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const Users = require("../../Schema/CustomerSchema");
+const {Users} = require("../../Schema/CustomerSchema");
 
 router.post("/signup", async (req, res) => {
   const { firstName, lastName, phone, email, password } = req.body;
