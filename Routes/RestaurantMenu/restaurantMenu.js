@@ -57,6 +57,7 @@ router.post("/getmenulist", async (req, res) => {
 
 router.post("/getRestaurantInfo", async (req, res) => {
   const isvalid = jwt.verify(req.headers.authorization, "secret");
+  console.log(isvalid);
   if (isvalid) {
     const resinfo = await RestaurantInfo.findOne({ _id: req.body.id });
 

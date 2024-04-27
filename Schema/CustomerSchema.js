@@ -39,12 +39,12 @@ const cart_item = new mongoose.Schema({
   },
 });
 
-const shopping_session = new mongoose.Schema({
+const orderSession = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  total: {
+  totalAmount: {
     type: Number,
     required: true,
   },
@@ -52,6 +52,6 @@ const shopping_session = new mongoose.Schema({
 
 const Users = mongoose.model("User", customerSchema);
 const Cart = mongoose.model("Cart_item", cart_item);
-const Session = mongoose.model("Shopping_session", shopping_session);
+const Session = mongoose.model("OrderSession", orderSession);
 // module.exports = Users;
 module.exports = { Users, Cart, Session };
