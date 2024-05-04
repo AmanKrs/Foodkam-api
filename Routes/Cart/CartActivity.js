@@ -88,48 +88,48 @@ router.post("/removeCartItem", async (req, res) => {
         { quantity: quantity },
         { new: true }
       );
-       if (removeItem) {
-         //finding all item in cart for the user
-         const itemInCart = await Cart.find({ user_id: isvalid.uid });
-         //console.log(itemInCart);
-         //checking items for user is true then return all the items with id in array
-         if (itemInCart) {
-           let itemPrices = itemInCart.map(async (elem) => {
-             //console.log(elem);
-             return {
-               itemIncartDetail: await RestaurantsMenu.findById(elem.item_id),
-               qauntOfItem: elem.quantity,
-             };
-           });
+      if (removeItem) {
+        //finding all item in cart for the user
+        const itemInCart = await Cart.find({ user_id: isvalid.uid });
+        //console.log(itemInCart);
+        //checking items for user is true then return all the items with id in array
+        if (itemInCart) {
+          let itemPrices = itemInCart.map(async (elem) => {
+            //console.log(elem);
+            return {
+              itemIncartDetail: await RestaurantsMenu.findById(elem.item_id),
+              qauntOfItem: elem.quantity,
+            };
+          });
 
-           console.log("itemPrices", itemPrices);
-           //handling all promises occur at ones
-           Promise.all(itemPrices).then(async (resp) => {
-             console.log("itemPrices", resp);
-             let orderTotal = 0;
-             //setting the total added item cost
-             resp.forEach((elem) => {
-               console.log("elem", elem);
-               orderTotal += elem.itemIncartDetail.itemprice * elem.qauntOfItem;
-             });
-             //updating order session for user
-             const updateOrderSession = await Session.findOneAndUpdate(
-               { user_id: isvalid.uid },
-               { $set: { totalAmount: orderTotal } }
-             );
-             console.log("updateOrderSession:", updateOrderSession);
-             if (updateOrderSession) {
-               res.status(200).send({
-                 msg: "cart and Order session updated successfully",
-                 result: resp,
-               });
-             }
-             console.log("orderTotal:", orderTotal);
-             // res.send({ result: resp });
-           });
-         }
-         //res.send({ cartItemDetail: updateCartItem });
-       }
+          console.log("itemPrices", itemPrices);
+          //handling all promises occur at ones
+          Promise.all(itemPrices).then(async (resp) => {
+            console.log("itemPrices", resp);
+            let orderTotal = 0;
+            //setting the total added item cost
+            resp.forEach((elem) => {
+              console.log("elem", elem);
+              orderTotal += elem.itemIncartDetail.itemprice * elem.qauntOfItem;
+            });
+            //updating order session for user
+            const updateOrderSession = await Session.findOneAndUpdate(
+              { user_id: isvalid.uid },
+              { $set: { totalAmount: orderTotal } }
+            );
+            console.log("updateOrderSession:", updateOrderSession);
+            if (updateOrderSession) {
+              res.status(200).send({
+                msg: "cart and Order session updated successfully",
+                result: resp,
+              });
+            }
+            console.log("orderTotal:", orderTotal);
+            // res.send({ result: resp });
+          });
+        }
+        //res.send({ cartItemDetail: updateCartItem });
+      }
       // console.log("removeItem", removeItem);
       if (!quantity) {
         const delItem = await Cart.findOneAndDelete(
@@ -142,7 +142,6 @@ router.post("/removeCartItem", async (req, res) => {
             user_id: isvalid.uid,
           });
         }
-        
       }
 
       // console.log(removeItem);
@@ -314,4 +313,36 @@ router.post("/getItemQuant", async (req, res) => {
     //   });
   }
 });
+
+router.get("/getCartItems", async (req, res) => {
+  //verifying the request comes from registeruser
+  const isvalid = jwt.verify(req.headers.authorization, "secret");
+  // const isvalid = req.body.user;
+  // const itemname = req.body._id;
+  // console.log("itemname", req.body._id);
+
+  const fetchCart = await Cart.find({ user_id: isvalid.uid });
+  console.log("fetchCart", fetchCart);
+  if (fetchCart.length !== 0) {
+    let itemInCart = fetchCart.map(async (elem) => {
+      return {
+        itemInfo: await RestaurantsMenu.findById(elem.item_id),
+        itemQuantInCart: elem.quantity,
+      };
+    });
+    // res.status(200).send({ itemInCart: itemInCart });
+    const gettotalCartAmount = await Session.find({ user_id: isvalid.uid });
+
+    const totalCartAmount = gettotalCartAmount[0]?.totalAmount;
+    console.log("totalCartAmount", totalCartAmount);
+    Promise.all(itemInCart).then((resp) => {
+      res
+        .status(200)
+        .send({ cartDetails: resp, totalCartAmount: totalCartAmount });
+    });
+  } else {
+    res.status(204).send({ message: "non Item in cart" });
+  }
+});
+
 module.exports = router;
