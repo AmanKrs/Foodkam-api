@@ -21,7 +21,7 @@ app.listen(PORT, (err) => {
 });
 
 app.get("/ser", (req, res) => {
-  res.send({ msg: "server started with abckedn" });
+  res.send({ msg: "server started with backend" });
   res.end();
 });
 

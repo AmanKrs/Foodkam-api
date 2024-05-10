@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
   });
 
   if (findRestaurant.length !== 0) {
-    res.status(400).send({ msg: "Restaurant Already Present" });
+    res.status(403).send({ msg: "Restaurant Already Present" });
   } else {
     const Restaurant = new RestaurantInfo(req.body);
     const addRestaurant = await Restaurant.save();

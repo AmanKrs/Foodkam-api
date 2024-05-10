@@ -6,13 +6,13 @@ const router = express.Router();
 // textflow.useKey(
 //   "rbIbf5jXBcUmNFcxgk3v556tzcPkbu0vXoSaG7uSaOiMDw95j5iwnnQv47fSJEJZ"
 // );
-// const Validator = require("../Middleware/Validator");
-// const ValidatorSignup = require("../Middleware/validateSignup");
+const Validator = require("../../Middleware/loginValidator");
+const ValidatorSignup = require("../../Middleware/SignUpValidator");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
-const {Users} = require("../../Schema/CustomerSchema");
+// const mongoose = require("mongoose");
+const { Users } = require("../../Schema/CustomerSchema");
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", ValidatorSignup, async (req, res) => {
   const { firstName, lastName, phone, email, password } = req.body;
   console.log(req.body);
 
@@ -42,7 +42,7 @@ router.post("/signup", async (req, res) => {
 //     console.log("SUCCESS");
 //   }
 // });
-router.post("/login", async (req, res) => {
+router.post("/login", Validator, async (req, res) => {
   const { firstName, lastName, phone, email, password } = req.body;
 
   const userOne = await Users.findOne({ phone: req.body.phone });
@@ -59,7 +59,7 @@ router.post("/login", async (req, res) => {
       const token = jwt.sign(userData, "secret");
       res.status(200).send({ token: token });
     } else {
-      res.status(401).send({ msg: "password is incorrect" });
+      res.status(400).send({ msg: "username or password is incorrect" });
     }
   } else {
     res.status(403).send({ msg: "Please register user doesn't exist" });
