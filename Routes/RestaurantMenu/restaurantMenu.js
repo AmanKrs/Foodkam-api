@@ -46,6 +46,60 @@ router.post("/addmenu", async (req, res) => {
   res.end();
 });
 
+router.delete("/deleteitem", async (req, res) => {
+  const isvalid = jwt.verify(req.headers.authorization, "resSecret");
+  if (isvalid) {
+    const { _id } = req.body;
+
+    console.log("reqbodydel", _id);
+
+    if (req.body._id) {
+      const delItem = await RestaurantsMenu.deleteOne({
+        resId: isvalid.resid,
+        _id: _id,
+      });
+
+      if (delItem.deletedCount) {
+        res.status(200).send({ msg: "product Deleted" });
+      } else {
+        res.status(403).send({ msg: "Error deleting product value" });
+      }
+    } else {
+      res.status(500).send({ msg: "Network ERROR" });
+    }
+  }
+});
+
+router.put("/editproduct", async (req, res) => {
+  const isvalid = jwt.verify(req.headers.authorization, "resSecret");
+  if (isvalid) {
+    const { itemname, quantity, category, description, itemtype, itemprice } =
+      req.body.editFormData;
+
+    console.log("reqbody", req.body);
+
+    const updatedItem = await RestaurantsMenu.findOneAndUpdate(
+      { _id: req.body.editFormData._id },
+      {
+        category: category,
+        itemname: itemname,
+        quantity: quantity,
+        description: description,
+        itemtype: itemtype,
+        itemprice: itemprice,
+      }
+    );
+
+    if (updatedItem) {
+      res.status(200).send({ msg: "menuItem edited", updatedItem });
+    } else {
+      res.status(403).send({ msg: "Error in editeding menuItem " });
+    }
+  }
+
+  res.end();
+});
+
 router.post("/getmenulist", async (req, res) => {
   const isvalid = jwt.verify(req.headers.authorization, "resSecret");
   if (isvalid) {
