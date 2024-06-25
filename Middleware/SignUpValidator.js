@@ -11,11 +11,19 @@ const ValidatorSignup = (req, res, next) => {
     res.status(400).send({ msg: "Plese enter details, it is can't be empty" });
   } else {
     var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    let phoneformat = /^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
 
-    if (email.match(mailformat)) {
+    let formatmatch = email.match(mailformat) && phoneformat.test(phone);
+
+    if (formatmatch) {
       next();
     } else {
-      res.status(400).send({ msg: "email is invalid format" });
+      if (!email.match(mailformat)) {
+        res.status(400).send({ msg: "email is invalid format" });
+      }
+      if (!phoneformat.test(phone)) {
+        res.status(400).send({ msg: "Invalid Phone Number" });
+      }
     }
   }
 };

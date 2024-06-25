@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-// const Validator = require("../Middleware/Validator");
+const Validator = require("../../Middleware/loginValidator");
 // const ValidatorSignup = require("../Middleware/validateSignup");
 const jwt = require("jsonwebtoken");
 // const data = require("../database");
@@ -34,14 +34,14 @@ router.post("/register", async (req, res) => {
     if (addRestaurant) {
       res.status(200).send({ msg: "Restaurant Register Successfully" });
     } else {
-      res.status(403).send({ msg: "Unable to Register Restaurant " });
+      res.status(503).send({ msg: "Unable to Register Restaurant " });
     }
   }
 
   res.end();
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login",Validator, async (req, res) => {
   console.log(req.body);
   const {
     resName,
@@ -77,7 +77,7 @@ router.post("/login", async (req, res) => {
       const token = jwt.sign(resturantData, "resSecret");
       res.status(200).send({ token: token });
     } else {
-      res.status(401).send({ msg: "password is incorrect" });
+      res.status(401).send({ msg: "username or password is incorrect" });
     }
   } else {
     res.status(403).send({ msg: "Please register Restaurant doesn't exist" });
