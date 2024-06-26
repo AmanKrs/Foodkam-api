@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const Validator = require("../../Middleware/loginValidator");
+const resValidator = require("../../Middleware/registerValidator");
 // const ValidatorSignup = require("../Middleware/validateSignup");
 const jwt = require("jsonwebtoken");
 // const data = require("../database");
 const mongoose = require("mongoose");
 const RestaurantInfo = require("../../Schema/RestaurantSchema");
 
-router.post("/register", async (req, res) => {
+router.post("/register",resValidator, async (req, res) => {
+  
   const {
     resName,
     address,
@@ -41,7 +43,7 @@ router.post("/register", async (req, res) => {
   res.end();
 });
 
-router.post("/login",Validator, async (req, res) => {
+router.post("/login", Validator, async (req, res) => {
   console.log(req.body);
   const {
     resName,
@@ -59,7 +61,7 @@ router.post("/login",Validator, async (req, res) => {
   const RestaurantExist = await RestaurantInfo.findOne({
     phone: req.body.phone,
   });
-
+ 
   if (RestaurantExist) {
     const resturantData = {
       resid: RestaurantExist._id,
@@ -86,11 +88,9 @@ router.post("/login",Validator, async (req, res) => {
 });
 
 router.post("/getresturantDetails", async (req, res) => {
-  
-    const menuList = await RestaurantInfo.find();
-    console.log(menuList);
-    res.status(200).send(menuList);
-  
+  const menuList = await RestaurantInfo.find();
+  console.log(menuList);
+  res.status(200).send(menuList);
 });
 
 module.exports = router;
